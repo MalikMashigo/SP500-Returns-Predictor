@@ -87,15 +87,271 @@ This is a solo project. All work — including data collection and preprocessing
 ├── README.md
 ├── requirements.txt
 ├── data/                          # local data directory (not committed to git)
-│   ├── sp500_ohlcv_2005_2024.csv
-│   ├── headline_cache.json
-│   └── charts/                    # pre-generated candlestick PNGs
-├── code/
-│   ├── data_loader.py             # OHLCV dataset + technical indicators
-│   ├── chart_generator.py         # candlestick image generation + dataset
-│   ├── encoders.py                # BiLSTM, CNN, FinBERT, Sentiment encoders
-│   ├── model.py                   # fusion model + training utilities
-│   ├── train.py                   # main training script
-│   └── news_fetcher.py            # Alpaca News API integration
-└── checkpoints/                   # saved model weights (not committed)
+│   └── sp500_ohlcv.csv            # downloaded automatically by train_final.py
+├── data_loader.py                 # OHLCV dataset + technical indicators
+├── chart_generator.py             # candlestick image generation + dataset
+├── encoders.py                    # BiLSTM, CNN, FinBERT, Sentiment encoders
+├── model.py                       # multimodal fusion model + training utilities
+├── train.py                       # interim multimodal training script (Part 3)
+├── train_final.py                 # ← FINAL training script (Part 4)
+├── predict.py                     # ← single-sample inference (Part 4)
+├── news_fetcher.py                # Alpaca News API integration
+├── sample_val/
+│   └── sample_val.npz             # ← single validation sample (Part 4)
+└── checkpoints/                   # saved model weights (not committed to git)
+    ├── bilstm_final.pt
+    └── norm_stats.npz
 ```
+
+---
+
+## Part 4: Final Evaluation
+
+### How to Run
+
+**Step 1 — Install dependencies**
+
+```bash
+pip install torch yfinance scikit-learn pandas numpy
+```
+
+**Step 2 — Train the model** (downloads S&P 500 data automatically, takes ~5–10 min on CPU)
+
+```bash
+python train_final.py
+```
+
+This script downloads `^GSPC` OHLCV data from Yahoo Finance via `yfinance`, trains a
+BiLSTM regressor on the 2005–2018 training split, evaluates on the 2019–2021 validation
+split, and saves `checkpoints/bilstm_final.pt`, `checkpoints/norm_stats.npz`, and
+`checkpoints/metrics.txt`. It also saves the bundled validation sample to
+`sample_val/sample_val.npz`.
+
+**Step 3 — Run inference on the included single validation sample**
+
+```bash
+python predict.py
+```
+
+This requires no additional downloads. It loads `sample_val/sample_val.npz` (a
+pre-normalized 30-day feature window for 2019-02-19) and the trained checkpoint,
+prints the predicted next-day log return, the implied directional call (UP or DOWN),
+and compares it to the actual return stored in the sample file.
+
+Optional flags:
+
+```bash
+python predict.py --sample sample_val/sample_val.npz \
+                  --checkpoint checkpoints/bilstm_final.pt
+```
+
+---
+
+### Model Architecture for the Final Submission
+
+The final trained model is the **BiLSTM-only branch** of the larger multimodal
+architecture described in Parts 1–3. The full multimodal fusion (BiLSTM + ResNet-18
+CNN + FinBERT + SentimentMLP) remains the long-term design goal, but the CNN branch
+depends on pre-generated candlestick chart images (not committed to the repo due to
+size), and the FinBERT/sentiment branches were not yet stable enough for the final
+deadline as documented in Part 3. The BiLSTM branch is the component that ran
+end-to-end and produced reproducible results on both train and validation splits.
+
+The architecture is:
+
+```
+Input: (batch, 30, 6)          — 30-day rolling window, 6 features
+  │
+  ▼
+BiLSTM (hidden=128, layers=2, bidirectional)
+  │  concatenate [forward_h, backward_h]  →  (batch, 256)
+  ▼
+Linear(256 → 128) + ReLU + Dropout(0.3)
+Linear(128 →  64) + ReLU + Dropout(0.3)
+Linear( 64 →   1)         →  scalar predicted next-day log return
+```
+
+The six input features (computed from raw OHLCV data) are: daily log return,
+log-transformed volume, 14-day RSI, MACD histogram, Bollinger Band normalized width,
+and 10-day rate of change. All features are z-scored using statistics computed
+exclusively on the training split and stored in `checkpoints/norm_stats.npz` so the
+same normalization is applied consistently at inference time.
+
+The model is trained with MSE loss on the continuous log return (regression framing),
+and directional accuracy — the fraction of days where the sign of the predicted return
+matches the actual sign — is used as the primary classification metric, because it
+directly corresponds to the binary trading decision of going long or staying flat.
+
+---
+
+### Performance Results
+
+#### Training Set (2005-01-01 to 2018-12-31, 3,490 windows)
+
+| Metric | Value |
+|---|---|
+| MSE | 3.41 × 10⁻⁴ |
+| MAE | 0.00521 |
+| Directional Accuracy | **57.3%** |
+| Precision (Up class) | 0.610 |
+| Recall (Up class) | 0.619 |
+| F1 (Up class) | 0.614 |
+| F1 (Down class) | 0.521 |
+| F1 (macro average) | 0.568 |
+| ROC-AUC | 0.585 |
+
+Confusion matrix (rows = actual, columns = predicted; 0 = Down, 1 = Up):
+
+```
+              Predicted Down   Predicted Up
+Actual Down       812              758
+Actual Up         733             1187
+```
+
+57.3% directional accuracy means 1,999 of the 3,490 training windows were classified
+correctly. The model is slightly better at calling Up days (61.9% recall) than Down
+days (51.7% recall), which makes sense given that roughly 55% of training-set trading
+days had positive returns — the class prior already tilts toward Up.
+
+#### Validation Set (2019-01-01 to 2021-12-31, 726 windows)
+
+| Metric | Value |
+|---|---|
+| MSE | 4.19 × 10⁻⁴ |
+| MAE | 0.00683 |
+| Directional Accuracy | **54.1%** |
+| Precision (Up class) | 0.599 |
+| Recall (Up class) | 0.576 |
+| F1 (Up class) | 0.587 |
+| F1 (Down class) | 0.480 |
+| F1 (macro average) | 0.534 |
+| ROC-AUC | 0.548 |
+
+Confusion matrix:
+
+```
+              Predicted Down   Predicted Up
+Actual Down       154              159
+Actual Up         175              238
+```
+
+54.1% directional accuracy corresponds to 392 correctly called days out of 726.
+
+---
+
+### Choice and Justification of Evaluation Metrics
+
+This is a regression model where the prediction target is a continuous next-day log
+return. However, from a trading perspective the practically meaningful question is
+binary: will the index go up or down tomorrow? For that reason, **directional accuracy
+is the primary metric**, computed by thresholding the predicted log return at zero.
+A random coin-flip baseline would score 50%; a naive majority classifier (always
+predict Up, since markets trend up over long periods) scores approximately 55% on
+the training split and 57% on the validation split (the 2019–2021 period was an
+unusual multi-year bull market punctuated by the sharp 2020 COVID recovery). Beating
+the majority classifier is therefore the minimum bar for meaningful signal.
+
+Raw MSE and MAE are reported alongside directional accuracy because they capture
+whether the model is also calibrating the *magnitude* of predicted returns correctly,
+not just the sign. A model that consistently predicts ±0.001 when the actual move is
+±0.030 will still get directional accuracy right by chance, but will be useless for
+position sizing. Both MSE and MAE are higher on the validation set, confirming that
+the model struggles more with return magnitude out of sample.
+
+**Precision and recall** for the Up class are reported separately because the cost of
+false positives and false negatives is asymmetric in practice. A false positive (model
+says Up, market goes Down) means going long on a down day — a direct loss. A false
+negative (model says Down, market goes Up) means sitting out a positive day — an
+opportunity cost. The F1 score for each class summarizes this tradeoff. The Up class
+F1 of 0.587 on the validation set, versus 0.480 for Down, indicates the model finds
+upward days easier to identify — again consistent with the bull-market character of
+the 2019–2021 validation window.
+
+**ROC-AUC** measures whether the model's raw predicted return can rank days from most
+bearish to most bullish, regardless of where the decision threshold sits. An AUC of
+0.548 on the validation set (training: 0.585) is modest but above the random baseline
+of 0.5, confirming the model has learned a weak but real directional signal. This
+also means that adjusting the decision threshold (e.g., only acting when |predicted
+return| exceeds a confidence cutoff) could improve precision at the cost of coverage,
+a useful operational lever.
+
+An **Expected Calibration Error (ECE)** analysis was considered but not implemented
+for this submission because the model produces a continuous regression output, not
+probability scores. Calibration is more natural to measure after converting to
+probabilities via Platt scaling or isotonic regression, which is flagged as a
+future step.
+
+---
+
+### Commentary on Observed Accuracy and Ideas for Improvement
+
+The 3.2 percentage-point gap between training directional accuracy (57.3%) and
+validation directional accuracy (54.1%), combined with the higher MSE on the
+validation set (4.19 × 10⁻⁴ vs 3.41 × 10⁻⁴), is a textbook sign of **mild
+overfitting**. The model has partially memorized patterns in the 2005–2018 training
+data that do not transfer cleanly to the 2019–2021 validation period. This is
+expected given the structural differences between the two eras: the training set
+captures the 2008–09 financial crisis, a prolonged low-volatility expansion in
+2012–17, and a Fed rate-hiking cycle in 2018; the validation set contains the COVID
+crash of February–March 2020 (the fastest 30% decline in S&P 500 history) and the
+subsequent 2020–21 stimulus-driven recovery, which are qualitatively different market
+regimes.
+
+It is worth noting that 54.1% directional accuracy is not meaningless — beating a
+coin flip by 4 percentage points consistently across 726 trading days is statistically
+significant and, in a compounding context, represents real edge. Several academic
+papers on ML-based return prediction report 52–57% directional accuracy as state of
+the art for daily S&P 500 prediction, so the model is in the right ballpark for the
+architecture and feature set used. The majority-classifier baseline on the 2019–2021
+period is approximately 57% (57% of those days had positive returns), which the model
+does not beat outright — this is the more honest comparison.
+
+**Ideas for improvement:**
+
+1. **Increase regularization on the LSTM.** The Part 3 report already flagged
+   overfitting in the time series branch with hidden size 128 and two layers. Reducing
+   hidden size to 64, applying variational dropout (sampling a single mask per
+   sequence rather than per timestep), or adding layer normalization inside the LSTM
+   would reduce parameter count and impose stronger structural regularization.
+
+2. **Rolling or expanding-window retraining.** Financial data is non-stationary: a
+   model trained once on 2005–2018 and frozen during 2019–2021 cannot adapt to the
+   COVID regime shift. Retraining the model monthly on an expanding window (adding
+   each new month to the training set as it becomes available) is the standard
+   industry approach and would likely narrow the train/validation gap considerably.
+
+3. **Complete the multimodal fusion.** The original design (BiLSTM + ResNet CNN +
+   FinBERT + SentimentMLP) was designed precisely to address the weakness of any
+   single modality. News and sentiment signals carry forward-looking information that
+   pure price data cannot capture. The Part 3 report describes concrete steps toward
+   integrating these branches; completing that integration is the highest-priority
+   next step for improving validation accuracy.
+
+4. **Attention over the time window.** Rather than using only the final hidden state
+   of the BiLSTM, applying a self-attention or multi-head attention layer over the
+   full 30-day sequence output would allow the model to selectively weight the days
+   most relevant to the prediction. In NLP tasks, attention consistently outperforms
+   last-hidden-state pooling; the same logic applies to financial time series where
+   specific recent days (e.g., a Fed announcement day) may carry disproportionate
+   predictive weight.
+
+5. **Regime-aware training.** The model currently treats all 3,490 training windows
+   as equally informative. Training with a regime indicator (e.g., VIX above or below
+   a threshold, or a Hidden Markov Model regime label) as an additional feature would
+   give the model explicit context about current market conditions, potentially
+   improving generalization to the high-volatility 2020 regime.
+
+6. **Threshold-based trading signal.** Rather than making a binary call on every day,
+   only acting when the model's predicted absolute return exceeds a confidence
+   threshold (e.g., |predicted return| > 0.5%) would filter out the low-confidence
+   predictions where the model is most likely to be wrong. This is a calibration
+   technique that trades coverage for precision and is standard in systematic trading
+   applications.
+
+In summary: the model has learned a real but modest directional signal from price
+history alone. The gap between training and validation accuracy is moderate and
+expected for financial data, but there is meaningful headroom for improvement through
+stronger regularization, rolling retraining, completing the multimodal architecture,
+and attention mechanisms. The 54.1% validation directional accuracy is a credible
+baseline from which the fuller multimodal system described in Parts 1–3 should
+improve.
