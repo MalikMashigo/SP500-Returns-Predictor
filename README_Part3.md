@@ -109,9 +109,11 @@ This is a solo project. All work — including data collection and preprocessing
 
 ### How to Run
 
-**Step 1 — Install dependencies**
+**Step 1 — Create a virtual environment and install dependencies**
 
 ```bash
+python3 -m venv venv
+source venv/bin/activate          # Windows: venv\Scripts\activate
 pip install torch yfinance scikit-learn pandas numpy
 ```
 
@@ -144,6 +146,10 @@ Optional flags:
 python predict.py --sample sample_val/sample_val.npz \
                   --checkpoint checkpoints/bilstm_final.pt
 ```
+
+> **Note for macOS (Homebrew Python):** system pip is blocked by PEP 668.
+> Always activate the venv (`source venv/bin/activate`) before running
+> `pip install` or any of the scripts above.
 
 ---
 
