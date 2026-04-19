@@ -1,0 +1,26 @@
+
+TRAIN SET (3474 samples)
+  MSE                  : 0.000141
+  MAE                  : 0.007526
+  Directional Accuracy : 54.35%
+  Precision (Up)       : 0.5435
+  Recall    (Up)       : 1.0000
+  F1        (Up)       : 0.7042
+  F1  (macro)          : 0.3521
+  ROC-AUC              : 0.4998
+  Confusion Matrix:
+    TN=0  FP=1586
+    FN=0  TP=1888
+
+VALIDATION SET (726 samples)
+  MSE                  : 0.000206
+  MAE                  : 0.008483
+  Directional Accuracy : 57.30%
+  Precision (Up)       : 0.5730
+  Recall    (Up)       : 1.0000
+  F1        (Up)       : 0.7285
+  F1  (macro)          : 0.3643
+  ROC-AUC              : 0.5008
+  Confusion Matrix:
+    TN=0  FP=310
+    FN=0  TP=416
