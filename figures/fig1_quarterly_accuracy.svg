@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 420" font-family="Arial,sans-serif">
+  <!-- Background -->
+  <rect width="860" height="420" fill="#fff"/>
+  <!-- Title -->
+  <text x="430" y="28" text-anchor="middle" font-size="14" font-weight="bold" fill="#222">
+    Quarterly Directional Accuracy — Test Set (2022–2024)
+  </text>
+
+  <!-- Grid lines (dashed) at 40%, 45%, 50%, 55%, 60%, 65%, 70% -->
+  <!-- y(v%) = 50 + (70-v)*8  ;  plot bottom y=330, top y=50 -->
+  <!-- y(40)=290, y(45)=250, y(50)=210, y(55)=170, y(60)=130, y(65)=90, y(70)=50 -->
+  <line x1="70" y1="290" x2="840" y2="290" stroke="#ddd" stroke-dasharray="4,3"/>
+  <line x1="70" y1="250" x2="840" y2="250" stroke="#ddd" stroke-dasharray="4,3"/>
+  <line x1="70" y1="210" x2="840" y2="210" stroke="#ddd" stroke-dasharray="4,3"/>
+  <line x1="70" y1="170" x2="840" y2="170" stroke="#ddd" stroke-dasharray="4,3"/>
+  <line x1="70" y1="130" x2="840" y2="130" stroke="#ddd" stroke-dasharray="4,3"/>
+  <line x1="70" y1="90"  x2="840" y2="90"  stroke="#ddd" stroke-dasharray="4,3"/>
+
+  <!-- 50% random baseline (red dashed) -->
+  <line x1="70" y1="210" x2="840" y2="210" stroke="#e85b4a" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="845" y="214" font-size="10" fill="#e85b4a">50%</text>
+
+  <!-- Axes -->
+  <line x1="70" y1="50" x2="70" y2="330" stroke="#333" stroke-width="1.5"/>
+  <line x1="70" y1="330" x2="840" y2="330" stroke="#333" stroke-width="1.5"/>
+
+  <!-- Y-axis labels -->
+  <text x="62" y="294" text-anchor="end" font-size="11" fill="#555">40%</text>
+  <text x="62" y="254" text-anchor="end" font-size="11" fill="#555">45%</text>
+  <text x="62" y="214" text-anchor="end" font-size="11" fill="#555">50%</text>
+  <text x="62" y="174" text-anchor="end" font-size="11" fill="#555">55%</text>
+  <text x="62" y="134" text-anchor="end" font-size="11" fill="#555">60%</text>
+  <text x="62" y="94"  text-anchor="end" font-size="11" fill="#555">65%</text>
+  <text x="62" y="54"  text-anchor="end" font-size="11" fill="#555">70%</text>
+  <text x="14" y="200" text-anchor="middle" font-size="12" fill="#333" transform="rotate(-90,14,200)">Directional Accuracy</text>
+
+  <!-- ── BARS ────────────────────────────────────────────────────────────── -->
+  <!-- group_w = 64.17, bar_w = 22, gap = 4
+       model_bar_x[i] = 78.1 + i*64.17
+       maj_bar_x[i]   = 104.1 + i*64.17
+       bar_y = 330 - bar_h  ;  bar_h = (acc-35)*8
+       acc = [41.3,43.8,47.7,51.6,54.0,57.8,49.2,58.7,58.1,55.6,55.4,53.3]
+       maj = [39.7,40.6,46.2,54.8,55.6,57.8,47.7,63.5,62.9,54.0,55.4,55.0]
+  -->
+
+  <!-- 2022Q1 acc=41.3 h=50.4 y=279.6 | maj=39.7 h=37.6 y=292.4 -->
+  <rect x="78"  y="280" width="22" height="50"  fill="#1a6bb5"/>
+  <rect x="104" y="292" width="22" height="38"  fill="#aaa"/>
+
+  <!-- 2022Q2 acc=43.8 h=70.4 y=259.6 | maj=40.6 h=44.8 y=285.2 -->
+  <rect x="142" y="260" width="22" height="70"  fill="#1a6bb5"/>
+  <rect x="168" y="285" width="22" height="45"  fill="#aaa"/>
+
+  <!-- 2022Q3 acc=47.7 h=101.6 y=228.4 | maj=46.2 h=89.6 y=240.4 -->
+  <rect x="206" y="228" width="22" height="102" fill="#1a6bb5"/>
+  <rect x="232" y="240" width="22" height="90"  fill="#aaa"/>
+
+  <!-- 2022Q4 acc=51.6 h=132.8 y=197.2 | maj=54.8 h=158.4 y=171.6 -->
+  <rect x="270" y="197" width="22" height="133" fill="#1a6bb5"/>
+  <rect x="296" y="172" width="22" height="158" fill="#aaa"/>
+
+  <!-- 2023Q1 acc=54.0 h=152.0 y=178.0 | maj=55.6 h=164.8 y=165.2 -->
+  <rect x="335" y="178" width="22" height="152" fill="#1a6bb5"/>
+  <rect x="361" y="165" width="22" height="165" fill="#aaa"/>
+
+  <!-- 2023Q2 acc=57.8 h=183.2 y=146.8 | maj=57.8 h=183.2 y=146.8 -->
+  <rect x="399" y="147" width="22" height="183" fill="#1a6bb5"/>
+  <rect x="425" y="147" width="22" height="183" fill="#aaa"/>
+
+  <!-- 2023Q3 acc=49.2 h=113.6 y=216.4 | maj=47.7 h=101.6 y=228.4 -->
+  <rect x="463" y="216" width="22" height="114" fill="#1a6bb5"/>
+  <rect x="489" y="228" width="22" height="102" fill="#aaa"/>
+
+  <!-- 2023Q4 acc=58.7 h=189.6 y=140.4 | maj=63.5 h=228.0 y=102.0 -->
+  <rect x="527" y="140" width="22" height="190" fill="#1a6bb5"/>
+  <rect x="553" y="102" width="22" height="228" fill="#aaa"/>
+
+  <!-- 2024Q1 acc=58.1 h=185.6 y=144.4 | maj=62.9 h=222.4 y=107.6 -->
+  <rect x="591" y="144" width="22" height="186" fill="#1a6bb5"/>
+  <rect x="617" y="108" width="22" height="222" fill="#aaa"/>
+
+  <!-- 2024Q2 acc=55.6 h=164.8 y=165.2 | maj=54.0 h=152.0 y=178.0 -->
+  <rect x="655" y="165" width="22" height="165" fill="#1a6bb5"/>
+  <rect x="681" y="178" width="22" height="152" fill="#aaa"/>
+
+  <!-- 2024Q3 acc=55.4 h=163.2 y=166.8 | maj=55.4 h=163.2 y=166.8 -->
+  <rect x="719" y="167" width="22" height="163" fill="#1a6bb5"/>
+  <rect x="745" y="167" width="22" height="163" fill="#aaa"/>
+
+  <!-- 2024Q4 acc=53.3 h=146.4 y=183.6 | maj=55.0 h=160.0 y=170.0 -->
+  <rect x="784" y="184" width="22" height="146" fill="#1a6bb5"/>
+  <rect x="810" y="170" width="22" height="160" fill="#aaa"/>
+
+  <!-- ── X-axis labels (rotated) ─────────────────────────────────────────── -->
+  <!-- x_label[i] = 70 + (i+0.5)*64.17 -->
+  <text transform="rotate(-40,102,348)" x="102" y="348" text-anchor="end" font-size="10" fill="#333">2022Q1</text>
+  <text transform="rotate(-40,166,348)" x="166" y="348" text-anchor="end" font-size="10" fill="#333">2022Q2</text>
+  <text transform="rotate(-40,230,348)" x="230" y="348" text-anchor="end" font-size="10" fill="#333">2022Q3</text>
+  <text transform="rotate(-40,294,348)" x="294" y="348" text-anchor="end" font-size="10" fill="#333">2022Q4</text>
+  <text transform="rotate(-40,359,348)" x="359" y="348" text-anchor="end" font-size="10" fill="#333">2023Q1</text>
+  <text transform="rotate(-40,423,348)" x="423" y="348" text-anchor="end" font-size="10" fill="#333">2023Q2</text>
+  <text transform="rotate(-40,487,348)" x="487" y="348" text-anchor="end" font-size="10" fill="#333">2023Q3</text>
+  <text transform="rotate(-40,551,348)" x="551" y="348" text-anchor="end" font-size="10" fill="#333">2023Q4</text>
+  <text transform="rotate(-40,615,348)" x="615" y="348" text-anchor="end" font-size="10" fill="#333">2024Q1</text>
+  <text transform="rotate(-40,679,348)" x="679" y="348" text-anchor="end" font-size="10" fill="#333">2024Q2</text>
+  <text transform="rotate(-40,743,348)" x="743" y="348" text-anchor="end" font-size="10" fill="#333">2024Q3</text>
+  <text transform="rotate(-40,808,348)" x="808" y="348" text-anchor="end" font-size="10" fill="#333">2024Q4</text>
+
+  <!-- Year annotations -->
+  <text x="206" y="410" text-anchor="middle" font-size="11" font-weight="bold" fill="#666">◀─── 2022 ───▶</text>
+  <text x="463" y="410" text-anchor="middle" font-size="11" font-weight="bold" fill="#666">◀─── 2023 ───▶</text>
+  <text x="719" y="410" text-anchor="middle" font-size="11" font-weight="bold" fill="#666">◀─── 2024 ───▶</text>
+
+  <!-- Legend -->
+  <rect x="300" y="55" width="14" height="12" fill="#1a6bb5"/>
+  <text x="318" y="65" font-size="11" fill="#333">BiLSTM model</text>
+  <rect x="420" y="55" width="14" height="12" fill="#aaa"/>
+  <text x="438" y="65" font-size="11" fill="#333">Majority-class baseline</text>
+  <line x1="590" y1="61" x2="610" y2="61" stroke="#e85b4a" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="615" y="65" font-size="11" fill="#e85b4a">50% random</text>
+</svg>

@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 320" font-family="Arial,sans-serif">
+  <!-- Background -->
+  <rect width="560" height="320" fill="#fff"/>
+
+  <!-- Title -->
+  <text x="280" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#222">
+    Train / Validation / Test Performance
+  </text>
+
+  <!-- Grid lines  y(v%) = 50 + (62-v)*16  ;  range 48-62%, h=224px
+       y(50)=50+192=242, y(52)=50+160=210, y(54)=50+128=178, y(56)=50+96=146,
+       y(58)=50+64=114, y(60)=50+32=82, y(62)=50 -->
+  <line x1="68" y1="242" x2="535" y2="242" stroke="#ddd" stroke-dasharray="4,3"/>
+  <line x1="68" y1="210" x2="535" y2="210" stroke="#ddd" stroke-dasharray="4,3"/>
+  <line x1="68" y1="178" x2="535" y2="178" stroke="#ddd" stroke-dasharray="4,3"/>
+  <line x1="68" y1="146" x2="535" y2="146" stroke="#ddd" stroke-dasharray="4,3"/>
+  <line x1="68" y1="114" x2="535" y2="114" stroke="#ddd" stroke-dasharray="4,3"/>
+  <line x1="68" y1="82"  x2="535" y2="82"  stroke="#ddd" stroke-dasharray="4,3"/>
+
+  <!-- Axes -->
+  <line x1="68" y1="50" x2="68"  y2="274" stroke="#333" stroke-width="1.5"/>
+  <line x1="68" y1="274" x2="535" y2="274" stroke="#333" stroke-width="1.5"/>
+
+  <!-- Y-axis labels -->
+  <text x="60" y="246" text-anchor="end" font-size="10" fill="#555">50%</text>
+  <text x="60" y="214" text-anchor="end" font-size="10" fill="#555">52%</text>
+  <text x="60" y="182" text-anchor="end" font-size="10" fill="#555">54%</text>
+  <text x="60" y="150" text-anchor="end" font-size="10" fill="#555">56%</text>
+  <text x="60" y="118" text-anchor="end" font-size="10" fill="#555">58%</text>
+  <text x="60" y="86"  text-anchor="end" font-size="10" fill="#555">60%</text>
+  <text x="14" y="165" text-anchor="middle" font-size="11" fill="#333" transform="rotate(-90,14,165)">Score (×100 for F1/AUC)</text>
+
+  <!-- ── BARS ─────────────────────────────────────────────────────────────
+       3 groups: Directional Acc | F1 macro | ROC-AUC
+       group_w = 467/3 = 155.7, bar_w = 32, gap = 5
+       pair_span = 3*32 + 2*5 = 106, offset = (155.7-106)/2 = 24.8
+
+       train, val, test x for group i:
+         x0 = 68 + i*155.7 + 24.8
+         x1 = x0 + 37
+         x2 = x1 + 37
+
+       Group 0 (Acc): x0=92.8, x1=129.8, x2=166.8
+       Group 1 (F1):  x0=248.5, x1=285.5, x2=322.5
+       Group 2 (AUC): x0=404.2, x1=441.2, x2=478.2
+
+       Values (×100): train=[57.3,56.8,58.5], val=[54.1,53.4,54.8], test=[52.5,52.0,52.8]
+       bar_h = (v - 48)*16
+       bar_y = 274 - bar_h
+
+       train_h=[146.8,140.8,168.0]  train_y=[127.2,133.2,106.0]
+       val_h  =[97.6, 86.4,108.8]   val_y  =[176.4,187.6,165.2]
+       test_h =[72.0, 64.0, 76.8]   test_y =[202.0,210.0,197.2]
+  -->
+
+  <!-- Directional Accuracy group -->
+  <rect x="93"  y="127" width="32" height="147" fill="#1a6bb5"/>
+  <rect x="130" y="176" width="32" height="98"  fill="#4aa8e6"/>
+  <rect x="167" y="202" width="32" height="72"  fill="#e85b4a"/>
+
+  <!-- F1 macro group -->
+  <rect x="249" y="133" width="32" height="141" fill="#1a6bb5"/>
+  <rect x="286" y="188" width="32" height="86"  fill="#4aa8e6"/>
+  <rect x="323" y="210" width="32" height="64"  fill="#e85b4a"/>
+
+  <!-- ROC-AUC group -->
+  <rect x="405" y="106" width="32" height="168" fill="#1a6bb5"/>
+  <rect x="442" y="165" width="32" height="109" fill="#4aa8e6"/>
+  <rect x="479" y="197" width="32" height="77"  fill="#e85b4a"/>
+
+  <!-- Value labels on top of bars -->
+  <text x="109" y="122" text-anchor="middle" font-size="9" fill="#1a6bb5">57.3%</text>
+  <text x="146" y="171" text-anchor="middle" font-size="9" fill="#4aa8e6">54.1%</text>
+  <text x="183" y="197" text-anchor="middle" font-size="9" fill="#e85b4a">52.5%</text>
+
+  <text x="265" y="128" text-anchor="middle" font-size="9" fill="#1a6bb5">0.568</text>
+  <text x="302" y="183" text-anchor="middle" font-size="9" fill="#4aa8e6">0.534</text>
+  <text x="339" y="205" text-anchor="middle" font-size="9" fill="#e85b4a">0.520</text>
+
+  <text x="421" y="101" text-anchor="middle" font-size="9" fill="#1a6bb5">0.585</text>
+  <text x="458" y="160" text-anchor="middle" font-size="9" fill="#4aa8e6">0.548</text>
+  <text x="495" y="192" text-anchor="middle" font-size="9" fill="#e85b4a">0.528</text>
+
+  <!-- X-axis group labels -->
+  <text x="163" y="292" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">Directional Acc</text>
+  <text x="303" y="292" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">F1 macro</text>
+  <text x="459" y="292" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">ROC-AUC</text>
+
+  <!-- Legend -->
+  <rect x="100" y="305" width="12" height="10" fill="#1a6bb5"/>
+  <text x="116" y="314" font-size="10" fill="#333">Train (2005-2018)</text>
+  <rect x="235" y="305" width="12" height="10" fill="#4aa8e6"/>
+  <text x="251" y="314" font-size="10" fill="#333">Val (2019-2021)</text>
+  <rect x="360" y="305" width="12" height="10" fill="#e85b4a"/>
+  <text x="376" y="314" font-size="10" fill="#333">Test (2022-2024)</text>
+</svg>
